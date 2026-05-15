@@ -1,1 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="مبيعاتي">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
+<title>مبيعاتي</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:Tahoma,sans-serif;background:#f5f5f5;color:#1a1a2e;min-height:100vh;max-width:430px;margin:auto}
+::-webkit-scrollbar{width:0}
+.hdr{background:#fff;border-bottom:1px solid #e8e0f5;padding:14px 16px 10px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(98,0,234,.07)}
+.hdr-top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:17px;font-weight:900;color:#5e35b1}
+.logo span{color:#9c27b0}
+.credit{font-size:9px;color:#b39ddb;margin-top:2px}
+.date-nav{display:flex;align-items:center;justify-content:center;gap:6px;background:#ede7f6;border-radius:20px;padding:6px 14px;margin:10px 16px 0}
+.dnav-btn{background:none;border:none;color:#7e57c2;font-size:20px;cursor:pointer;padding:0 4px;line-height:1}
+.dnav-btn:active{opacity:.6}
+.dnav-label{font-size:13px;font-weight:800;color:#4527a0;min-width:130px;text-align:center}
+.sum{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:12px 14px}
+.sc{background:#fff;border:1.5px solid #ede7f6;border-radius:14px;padding:10px 6px;text-align:center;box-shadow:0 1px 4px rgba(98,0,234,.06)}
+.sc small{font-size:9px;color:#9e9e9e;display:block;margin-bottom:3px}
+.sc b{font-size:15px;font-weight:800}
+.sc.av b{color:#5e35b1}.sc.rv b{color:#e53935}.sc.tv b{color:#7b1fa2}
+.sec{padding:0 14px 10px}
+.sec-t{font-size:11px;color:#9e9e9e;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 14px 90px}
+.slot{background:#fff;border:2px solid #ede7f6;border-radius:18px;padding:12px 8px 10px;text-align:center;cursor:pointer;transition:.2s;box-shadow:0 2px 6px rgba(98,0,234,.06);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.slot:active{transform:scale(.95)}
+.slot.empty{border:2px dashed #ce93d8;background:#fdf8ff}
+.slot.filled{border:2px solid #9c27b0}
+.slot-ico{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#6a1b9a,#9c27b0);display:flex;align-items:center;justify-content:center;margin:0 auto 7px;box-shadow:0 3px 10px rgba(106,27,154,.35)}
+.slot-ico svg{width:26px;height:26px}
+.slot.empty .slot-ico{background:linear-gradient(135deg,#ce93d8,#e1bee7);box-shadow:none}
+.slot-name{font-size:10px;font-weight:800;color:#4527a0;margin-bottom:4px;line-height:1.3;word-break:break-word}
+.slot.empty .slot-name{color:#ce93d8;font-weight:600;font-size:9px}
+.slot-pct{font-size:15px;font-weight:900;color:#5e35b1}
+.slot.empty .slot-pct{font-size:10px;color:#ce93d8;font-weight:500}
+.mini-bar{width:100%;height:4px;background:#ede7f6;border-radius:999px;overflow:hidden;margin-top:5px}
+.mini-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7b1fa2,#ce93d8)}
+.slot-num{font-size:8px;font-weight:700;color:#9c27b0;margin-top:3px}
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:flex-end;justify-content:center}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:24px 24px 0 0;border-top:3px solid #9c27b0;padding:20px 18px 40px;width:100%;max-width:430px;animation:mu .25s ease;max-height:92vh;overflow-y:auto}
+@keyframes mu{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mhdl{width:36px;height:3px;background:#ede7f6;border-radius:2px;margin:0 auto 14px}
+.mtit{font-size:16px;font-weight:900;text-align:center;margin-bottom:4px;color:#4527a0}
+.msub{font-size:10px;color:#b39ddb;text-align:center;margin-bottom:14px}
+/* BIG ICON DISPLAY */
+.ico-big{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#6a1b9a,#9c27b0);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 14px rgba(106,27,154,.35)}
+.ico-big svg{width:32px;height:32px}
+/* ICON PICKER GRID */
+.ico-pick-label{font-size:11px;color:#9e9e9e;margin-bottom:7px;display:block;font-weight:700}
+.ico-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:14px;max-height:160px;overflow-y:auto}
+.ip{width:100%;aspect-ratio:1;background:#f5f0ff;border:2px solid transparent;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:6px}
+.ip svg{width:100%;height:100%}
+.ip.sel{border-color:#9c27b0;background:#ede7f6}
+.ip:active{opacity:.7}
+.fg{margin-bottom:11px}
+.fg label{font-size:11px;color:#9e9e9e;display:block;margin-bottom:4px;font-weight:700}
+.fi{width:100%;background:#f5f0ff;border:1.5px solid #ede7f6;border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;color:#1a1a2e;outline:none;direction:rtl}
+.fi:focus{border-color:#9c27b0}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.stat-box{background:#f5f0ff;border-radius:12px;padding:10px 8px;text-align:center}
+.stat-box small{font-size:9px;color:#9e9e9e;display:block;margin-bottom:3px}
+.stat-box b{font-size:15px;font-weight:800;color:#5e35b1}
+.stat-box.red b{color:#e53935}
+.pct-bar{height:8px;background:#ede7f6;border-radius:999px;overflow:hidden;margin:8px 0 3px}
+.pct-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7b1fa2,#ce93d8);transition:width .4s}
+.pct-label{display:flex;justify-content:space-between;font-size:10px;color:#9e9e9e;margin-bottom:10px}
+.pct-label b{color:#5e35b1;font-size:12px}
+.mact{display:flex;gap:8px;margin-top:6px}
+.mcan{flex:1;background:#f5f0ff;border:1.5px solid #ede7f6;border-radius:12px;padding:12px;font-family:inherit;font-size:13px;color:#9e9e9e;cursor:pointer;font-weight:700}
+.msav{flex:2;background:linear-gradient(135deg,#6a1b9a,#9c27b0);border:none;border-radius:12px;padding:12px;font-family:inherit;font-size:13px;font-weight:900;color:#fff;cursor:pointer}
+.msav:active,.mcan:active{opacity:.75}
+.mdel{width:100%;background:#fff;border:1.5px solid #ffcdd2;border-radius:12px;padding:10px;font-family:inherit;font-size:12px;color:#e53935;cursor:pointer;margin-top:8px;font-weight:700}
+.dlog-section{margin-top:12px;border-top:1px solid #ede7f6;padding-top:12px}
+.dlog-tit{font-size:11px;font-weight:800;color:#7b1fa2;margin-bottom:8px}
+.dlog-add{display:flex;gap:6px;margin-bottom:8px}
+.dlog-inp{flex:1;background:#f5f0ff;border:1.5px solid #ede7f6;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;color:#1a1a2e;outline:none;direction:rtl}
+.dlog-inp:focus{border-color:#9c27b0}
+.dlog-savebtn{background:linear-gradient(135deg,#6a1b9a,#9c27b0);border:none;border-radius:8px;padding:8px 12px;font-family:inherit;font-size:12px;font-weight:800;color:#fff;cursor:pointer;white-space:nowrap}
+.dlog-savebtn:active{opacity:.7}
+.dlog-list{display:flex;flex-direction:column;gap:5px;max-height:130px;overflow-y:auto}
+.dlog-row{display:flex;justify-content:space-between;align-items:center;background:#f5f0ff;border-radius:8px;padding:6px 10px}
+.dlog-date{font-size:10px;color:#9e9e9e}
+.dlog-val{font-size:12px;font-weight:800;color:#5e35b1}
+.dlog-x{background:none;border:none;color:#e53935;font-size:13px;cursor:pointer}
+.dlog-empty{font-size:11px;color:#b39ddb;text-align:center;padding:8px 0}
+</style>
+</head>
+<body>
 
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="logo">🔷 <span>مبيعاتي</span></div>
+    <div style="text-align:left">
+      <div style="font-size:10px;font-weight:800;color:#7b1fa2">تنفيذ أبو سطام</div>
+      <div class="credit">يعمل بدون إنترنت</div>
+    </div>
+  </div>
+  <div class="date-nav">
+    <button class="dnav-btn" onclick="chD(-1)">‹</button>
+    <div class="dnav-label" id="dlabel"></div>
+    <button class="dnav-btn" onclick="chD(1)">›</button>
+  </div>
+</div>
+
+<div class="sum">
+  <div class="sc av"><small>✅ المحقق</small><b id="sa">0</b></div>
+  <div class="sc rv"><small>⏳ المتبقي</small><b id="sr">0</b></div>
+  <div class="sc tv"><small>🎯 الأهداف</small><b id="st">0/13</b></div>
+</div>
+<div class="sec"><span class="sec-t">اضغط على خانة لإدخال هدف</span></div>
+<div class="grid" id="grid"></div>
+
+<!-- MODAL -->
+<div class="ov" id="sm">
+  <div class="modal">
+    <div class="mhdl"></div>
+    <div class="ico-big" id="m-ico"></div>
+    <div class="mtit" id="m-tit">هدف جديد</div>
+    <div class="msub">📅 <span id="m-period"></span></div>
+
+    <span class="ico-pick-label">اختر الأيقونة</span>
+    <div class="ico-grid" id="icp"></div>
+
+    <div class="fg"><label>اسم الهدف</label><input class="fi" id="fn" placeholder="مثال: مبيعات آيفون"></div>
+    <div class="fg"><label>الهدف المستهدف</label><input class="fi" id="fg2" type="number" inputmode="numeric" placeholder="0" min="0"></div>
+    <div class="fg"><label>الوحدة <small style="color:#b39ddb">(ريال / جهاز / شريحة)</small></label><input class="fi" id="fu" placeholder="اختياري"></div>
+
+    <div class="stats-row" id="m-stats" style="display:none">
+      <div class="stat-box"><small>✅ المحقق</small><b id="ms-a">0</b></div>
+      <div class="stat-box red"><small>⏳ المتبقي</small><b id="ms-r">0</b></div>
+    </div>
+    <div class="pct-bar" id="m-pbar" style="display:none"><div class="pct-fill" id="m-pfill" style="width:0%"></div></div>
+    <div class="pct-label" id="m-plabel" style="display:none"><span>نسبة الإنجاز</span><b id="m-ppct">0%</b></div>
+
+    <div class="dlog-section">
+      <div class="dlog-tit">📅 السجل اليومي</div>
+      <div class="dlog-add">
+        <input class="dlog-inp" id="dl-inp" type="number" inputmode="numeric" placeholder="مبيعات اليوم">
+        <button class="dlog-savebtn" onclick="addLog()">＋ إضافة</button>
+      </div>
+      <div class="dlog-list" id="dl-list"></div>
+    </div>
+
+    <div class="mact">
+      <button class="mcan" onclick="closeM()">إلغاء</button>
+      <button class="msav" onclick="saveSlot()">💾 حفظ</button>
+    </div>
+    <button class="mdel" id="m-del" onclick="clearSlot()" style="display:none">🗑️ مسح الهدف</button>
+  </div>
+</div>
+
+<script>
+// ===== SVG ICONS LIBRARY =====
+var ICONS = [
+  // 1 موبايل
+  {id:'mobile',label:'موبايل',svg:'<rect x="9" y="2" width="14" height="28" rx="3" fill="#fff" opacity=".95"/><rect x="11" y="5" width="10" height="18" rx="1" fill="#9c27b0" opacity=".3"/><circle cx="16" cy="25.5" r="1.5" fill="#9c27b0" opacity=".7"/>'},
+  // 2 آيفون
+  {id:'iphone',label:'آيفون',svg:'<rect x="9" y="2" width="14" height="28" rx="4" fill="#fff" opacity=".95"/><rect x="13" y="4" width="6" height="1.5" rx=".75" fill="#9c27b0" opacity=".6"/><rect x="11" y="7" width="10" height="16" rx="1" fill="#9c27b0" opacity=".25"/><rect x="13" y="25" width="6" height="2" rx="1" fill="#9c27b0" opacity=".5"/>'},
+  // 3 أندرويد
+  {id:'android',label:'أندرويد',svg:'<rect x="8" y="5" width="16" height="22" rx="3" fill="#fff" opacity=".9"/><rect x="10" y="8" width="12" height="14" rx="1" fill="#9c27b0" opacity=".25"/><line x1="12" y1="3" x2="10" y2="5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><line x1="20" y1="3" x2="22" y2="5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><circle cx="13" cy="24.5" r=".8" fill="#fff" opacity=".7"/><circle cx="16" cy="24.5" r=".8" fill="#fff" opacity=".7"/><circle cx="19" cy="24.5" r=".8" fill="#fff" opacity=".7"/>'},
+  // 4 لابتوب
+  {id:'laptop',label:'لابتوب',svg:'<rect x="4" y="5" width="24" height="16" rx="2" fill="#fff" opacity=".9"/><rect x="6" y="7" width="20" height="12" rx="1" fill="#9c27b0" opacity=".25"/><rect x="2" y="21" width="28" height="3" rx="1.5" fill="#fff" opacity=".8"/><rect x="12" y="21" width="8" height="1.5" rx=".75" fill="#9c27b0" opacity=".4"/>'},
+  // 5 ماك بوك
+  {id:'macbook',label:'ماك',svg:'<rect x="5" y="5" width="22" height="15" rx="2" fill="#fff" opacity=".9"/><rect x="7" y="7" width="18" height="11" rx="1" fill="#9c27b0" opacity=".2"/><circle cx="16" cy="12.5" r="2" fill="#9c27b0" opacity=".15"/><rect x="2" y="20" width="28" height="2.5" rx="1.25" fill="#fff" opacity=".75"/><rect x="11" y="20" width="10" height="1.5" rx=".75" fill="#9c27b0" opacity=".35"/>'},
+  // 6 كمبيوتر
+  {id:'pc',label:'كمبيوتر',svg:'<rect x="3" y="2" width="26" height="18" rx="2" fill="#fff" opacity=".9"/><rect x="5" y="4" width="22" height="14" rx="1" fill="#9c27b0" opacity=".2"/><rect x="13" y="20" width="6" height="4" rx="1" fill="#fff" opacity=".7"/><rect x="9" y="24" width="14" height="2" rx="1" fill="#fff" opacity=".6"/>'},
+  // 7 آيباد
+  {id:'ipad',label:'آيباد',svg:'<rect x="5" y="2" width="22" height="28" rx="3" fill="#fff" opacity=".9"/><rect x="7" y="5" width="18" height="20" rx="1" fill="#9c27b0" opacity=".2"/><circle cx="16" cy="27" r="1.5" fill="#9c27b0" opacity=".5"/><rect x="15" y="2.5" width="2" height="1.5" rx=".75" fill="#9c27b0" opacity=".4"/>'},
+  // 8 تابلت
+  {id:'tablet',label:'تابلت',svg:'<rect x="4" y="3" width="24" height="26" rx="3" fill="#fff" opacity=".9"/><rect x="6" y="6" width="20" height="18" rx="1" fill="#9c27b0" opacity=".2"/><circle cx="16" cy="27" r="1.2" fill="#9c27b0" opacity=".5"/>'},
+  // 9 راوتر
+  {id:'router',label:'راوتر',svg:'<rect x="4" y="16" width="24" height="10" rx="2" fill="#fff" opacity=".9"/><circle cx="9" cy="21" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="14" cy="21" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="19" cy="21" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="24" cy="21" r="1.5" fill="#9c27b0" opacity=".6"/><line x1="16" y1="5" x2="16" y2="16" stroke="#fff" stroke-width="2"/><path d="M8 12 Q16 5 24 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M11 15 Q16 10 21 15" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>'},
+  // 10 واي فاي
+  {id:'wifi',label:'واي فاي',svg:'<path d="M4 13 Q16 3 28 13" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M8 17 Q16 10 24 17" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M12 21 Q16 17 20 21" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="25" r="2.5" fill="#fff"/>'},
+  // 11 شبكة إنترنت
+  {id:'internet',label:'إنترنت',svg:'<circle cx="16" cy="16" r="12" stroke="#fff" stroke-width="2" fill="none"/><ellipse cx="16" cy="16" rx="6" ry="12" stroke="#fff" stroke-width="1.5" fill="none"/><line x1="4" y1="16" x2="28" y2="16" stroke="#fff" stroke-width="1.5"/><line x1="6" y1="10" x2="26" y2="10" stroke="#fff" stroke-width="1.2"/><line x1="6" y1="22" x2="26" y2="22" stroke="#fff" stroke-width="1.2"/>'},
+  // 12 شريحة SIM
+  {id:'sim',label:'شريحة',svg:'<path d="M9 4 L9 28 L23 28 L23 10 L17 4 Z" fill="#fff" opacity=".9"/><path d="M17 4 L23 10 L17 10 Z" fill="#9c27b0" opacity=".4"/><rect x="11" y="13" width="4" height="5" rx=".5" fill="#9c27b0" opacity=".5"/><rect x="17" y="13" width="4" height="5" rx=".5" fill="#9c27b0" opacity=".5"/><rect x="11" y="20" width="10" height="4" rx=".5" fill="#9c27b0" opacity=".3"/>'},
+  // 13 بطاقة eSIM
+  {id:'esim',label:'eSIM',svg:'<rect x="4" y="8" width="24" height="16" rx="3" fill="#fff" opacity=".9"/><rect x="7" y="11" width="8" height="10" rx="1" fill="#9c27b0" opacity=".3"/><rect x="8" y="12" width="3" height="3" rx=".5" fill="#9c27b0" opacity=".6"/><rect x="12" y="12" width="3" height="3" rx=".5" fill="#9c27b0" opacity=".6"/><rect x="8" y="16" width="7" height="3" rx=".5" fill="#9c27b0" opacity=".4"/><text x="17" y="21" font-size="6" fill="#6a1b9a" font-weight="900" font-family="Arial">eSIM</text>'},
+  // 14 بطاقة اتصال
+  {id:'card',label:'بطاقة',svg:'<rect x="3" y="8" width="26" height="16" rx="3" fill="#fff" opacity=".9"/><rect x="3" y="13" width="26" height="4" fill="#9c27b0" opacity=".2"/><rect x="6" y="18" width="8" height="2" rx="1" fill="#9c27b0" opacity=".4"/><rect x="21" y="17" width="5" height="4" rx="1" fill="#9c27b0" opacity=".3"/>'},
+  // 15 ساعة ذكية
+  {id:'watch',label:'ساعة',svg:'<rect x="11" y="6" width="10" height="20" rx="3" fill="#fff" opacity=".9"/><rect x="13" y="8" width="6" height="16" rx="2" fill="#9c27b0" opacity=".2"/><line x1="16" y1="11" x2="16" y2="15" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="15" x2="19" y2="15" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/><rect x="13" y="3" width="6" height="3" rx="1" fill="#fff" opacity=".7"/><rect x="13" y="26" width="6" height="3" rx="1" fill="#fff" opacity=".7"/>'},
+  // 16 سماعات
+  {id:'headphones',label:'سماعة',svg:'<path d="M7 16 Q7 7 16 7 Q25 7 25 16" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="4" y="15" width="5" height="9" rx="2.5" fill="#fff" opacity=".9"/><rect x="23" y="15" width="5" height="9" rx="2.5" fill="#fff" opacity=".9"/>'},
+  // 17 سماعة أذن
+  {id:'earphone',label:'إيربود',svg:'<circle cx="16" cy="14" r="8" stroke="#fff" stroke-width="2" fill="none"/><circle cx="16" cy="14" r="3" fill="#fff" opacity=".8"/><path d="M16 22 Q16 27 12 28" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>'},
+  // 18 كاميرا
+  {id:'camera',label:'كاميرا',svg:'<rect x="3" y="8" width="26" height="18" rx="3" fill="#fff" opacity=".9"/><path d="M10 8 L12 4 L20 4 L22 8" fill="#fff" opacity=".7"/><circle cx="16" cy="17" r="5" stroke="#9c27b0" stroke-width="2" fill="none"/><circle cx="16" cy="17" r="2" fill="#9c27b0" opacity=".4"/><circle cx="23" cy="11" r="1.5" fill="#9c27b0" opacity=".4"/>'},
+  // 19 طابعة
+  {id:'printer',label:'طابعة',svg:'<rect x="4" y="11" width="24" height="14" rx="2" fill="#fff" opacity=".9"/><rect x="8" y="7" width="16" height="6" rx="1" fill="#fff" opacity=".7"/><rect x="8" y="20" width="16" height="7" rx="1" fill="#fff" opacity=".6"/><rect x="10" y="22" width="12" height="1.5" rx=".75" fill="#9c27b0" opacity=".4"/><rect x="10" y="25" width="8" height="1.5" rx=".75" fill="#9c27b0" opacity=".4"/><circle cx="23" cy="16" r="1.5" fill="#9c27b0" opacity=".5"/>'},
+  // 20 شاشة تلفزيون
+  {id:'tv',label:'تلفزيون',svg:'<rect x="2" y="4" width="28" height="18" rx="2" fill="#fff" opacity=".9"/><rect x="4" y="6" width="24" height="14" rx="1" fill="#9c27b0" opacity=".2"/><rect x="12" y="22" width="8" height="4" rx="1" fill="#fff" opacity=".7"/><rect x="9" y="26" width="14" height="2" rx="1" fill="#fff" opacity=".6"/>'},
+  // 21 جهاز ألعاب
+  {id:'gamepad',label:'ألعاب',svg:'<rect x="3" y="10" width="26" height="14" rx="7" fill="#fff" opacity=".9"/><circle cx="22" cy="14" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="25" cy="17" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="19" cy="17" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="22" cy="20" r="1.5" fill="#9c27b0" opacity=".6"/><line x1="9" y1="17" x2="13" y2="17" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/><line x1="11" y1="15" x2="11" y2="19" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/>'},
+  // 22 بلايستيشن
+  {id:'ps',label:'PS',svg:'<rect x="2" y="9" width="28" height="16" rx="3" fill="#fff" opacity=".9"/><circle cx="22" cy="13" r="1.3" fill="#9c27b0" opacity=".7"/><circle cx="25" cy="16" r="1.3" fill="#9c27b0" opacity=".7"/><circle cx="19" cy="16" r="1.3" fill="#9c27b0" opacity=".7"/><circle cx="22" cy="19" r="1.3" fill="#9c27b0" opacity=".7"/><rect x="5" y="14" width="2" height="5" rx="1" fill="#9c27b0" opacity=".5"/><rect x="4" y="15" width="4" height="3" rx="1" fill="#9c27b0" opacity=".5"/><rect x="10" y="13" width="3" height="7" rx="1" fill="#9c27b0" opacity=".3"/><rect x="10" y="15" width="5" height="3" rx="1" fill="#9c27b0" opacity=".3"/>'},
+  // 23 شاحن
+  {id:'charger',label:'شاحن',svg:'<rect x="10" y="2" width="12" height="16" rx="2" fill="#fff" opacity=".9"/><rect x="14" y="18" width="4" height="8" rx="1" fill="#fff" opacity=".8"/><line x1="13" y1="7" x2="13" y2="12" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/><line x1="19" y1="7" x2="19" y2="12" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/><rect x="14" y="26" width="4" height="2" rx="1" fill="#fff" opacity=".7"/>'},
+  // 24 بطارية
+  {id:'battery',label:'بطارية',svg:'<rect x="2" y="10" width="24" height="12" rx="2" fill="#fff" opacity=".9"/><rect x="26" y="13" width="4" height="6" rx="1" fill="#fff" opacity=".7"/><rect x="4" y="12" width="16" height="8" rx="1" fill="#9c27b0" opacity=".3"/>'},
+  // 25 كابل USB
+  {id:'usb',label:'USB',svg:'<line x1="16" y1="4" x2="16" y2="14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><rect x="9" y="14" width="14" height="8" rx="2" fill="#fff" opacity=".9"/><line x1="12" y1="17" x2="12" y2="19" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="16" x2="16" y2="20" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/><line x1="20" y1="17" x2="20" y2="19" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="22" x2="16" y2="28" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>'},
+  // 26 هارد ديسك
+  {id:'hdd',label:'هارد',svg:'<rect x="3" y="8" width="26" height="16" rx="3" fill="#fff" opacity=".9"/><circle cx="22" cy="16" r="4" stroke="#9c27b0" stroke-width="1.5" fill="none"/><circle cx="22" cy="16" r="1.5" fill="#9c27b0" opacity=".5"/><line x1="6" y1="13" x2="15" y2="13" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/><line x1="6" y1="16" x2="15" y2="16" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/><line x1="6" y1="19" x2="12" y2="19" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/>'},
+  // 27 فلاش ميموري
+  {id:'usb_drive',label:'فلاش',svg:'<rect x="10" y="6" width="12" height="18" rx="2" fill="#fff" opacity=".9"/><rect x="13" y="24" width="6" height="4" rx="1" fill="#fff" opacity=".7"/><rect x="12" y="9" width="8" height="2" rx="1" fill="#9c27b0" opacity=".4"/><rect x="12" y="13" width="8" height="2" rx="1" fill="#9c27b0" opacity=".4"/><rect x="12" y="17" width="5" height="2" rx="1" fill="#9c27b0" opacity=".4"/>'},
+  // 28 هاتف أرضي
+  {id:'phone',label:'هاتف أرضي',svg:'<path d="M6 6 Q6 4 8 4 L12 4 Q14 4 14 6 L15 11 Q15 13 13 13 L12 13 Q11 13 13 15 L17 19 Q19 21 19 20 L19 19 Q19 17 21 17 L26 18 Q28 18 28 20 L28 24 Q28 26 26 26 Q10 26 6 10 Q6 8 6 6Z" fill="#fff" opacity=".9"/>'},
+  // 29 أمان / قفل
+  {id:'lock',label:'أمان',svg:'<rect x="7" y="14" width="18" height="14" rx="3" fill="#fff" opacity=".9"/><path d="M10 14 L10 10 Q10 4 16 4 Q22 4 22 10 L22 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="20" r="2.5" fill="#9c27b0" opacity=".5"/><line x1="16" y1="22" x2="16" y2="25" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/>'},
+  // 30 إعدادات
+  {id:'settings',label:'إعدادات',svg:'<circle cx="16" cy="16" r="4" fill="#fff" opacity=".9"/><path d="M16 4 L17.5 8 L21.5 6.5 L21.5 10.5 L25.5 11 L23 14.5 L26 17.5 L22.5 19 L23 23 L19 22 L17.5 26 L15 23.5 L12.5 26 L11 22 L7 23 L7.5 19 L4 17.5 L7 14.5 L4.5 11 L8.5 10.5 L8.5 6.5 L12.5 8 Z" fill="#fff" opacity=".75"/>'},
+];
+
+var MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+var DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+var today=new Date(),curD=new Date(today);
+var selSlot=null,selIcon=ICONS[0];
+var slots=JSON.parse(localStorage.getItem('sl13b')||'[]');
+if(slots.length!==13){slots=Array(13).fill(null).map(function(_,i){return slots[i]||null;});}
+
+function dateKey(){return curD.getFullYear()+'-'+(curD.getMonth()+1)+'-'+curD.getDate();}
+function updDate(){document.getElementById('dlabel').textContent=DAYS[curD.getDay()]+' '+curD.getDate()+' '+MONTHS[curD.getMonth()]+' '+curD.getFullYear();renderGrid();}
+function chD(n){curD=new Date(curD);curD.setDate(curD.getDate()+n);updDate();}
+function fmt(n){n=Number(n)||0;if(n>=1e6)return(n/1e6).toFixed(1).replace(/\.0$/,'')+'م';if(n>=1e3)return(n/1e3).toFixed(1).replace(/\.0$/,'')+'ك';return n.toLocaleString('ar')}
+function pct(a,g){return g?Math.min(Math.round(a/g*100),999):0}
+function svgWrap(ico){return'<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">'+ico.svg+'</svg>';}
+
+function getLogs(idx){return JSON.parse(localStorage.getItem('log-'+idx+'-'+dateKey())||'[]');}
+function setLogs(idx,logs){localStorage.setItem('log-'+idx+'-'+dateKey(),JSON.stringify(logs));}
+function getAchieved(idx){return getLogs(idx).reduce(function(s,l){return s+l.v;},0);}
+function sv(){localStorage.setItem('sl13b',JSON.stringify(slots));}
+
+function renderGrid(){
+  var tg=0,ta=0,filled=0;
+  var G=document.getElementById('grid');G.innerHTML='';
+  slots.forEach(function(s,i){
+    var div=document.createElement('div');
+    if(!s){
+      div.className='slot empty';
+      div.onclick=function(){openSlot(i);};
+      div.innerHTML='<div class="slot-ico">'+svgWrap(ICONS[i%ICONS.length])+'</div><div class="slot-name">فارغ — اضغط</div><div class="slot-pct">—</div>';
+    } else {
+      var ico=ICONS.find(function(x){return x.id===s.ico;})||ICONS[0];
+      var a=getAchieved(i),g=Number(s.g||0),r=Math.max(0,g-a),p=pct(a,g);
+      tg+=g;ta+=a;filled++;
+      div.className='slot filled';
+      div.onclick=function(){openSlot(i);};
+      div.innerHTML='<div class="slot-ico">'+svgWrap(ico)+'</div>'+
+        '<div class="slot-name">'+s.n+'</div>'+
+        '<div class="slot-pct">'+p+'%</div>'+
+        '<div class="mini-bar"><div class="mini-fill" style="width:'+Math.min(p,100)+'%"></div></div>'+
+        '<div class="slot-num">'+fmt(a)+' / '+fmt(g)+'</div>';
+    }
+    G.appendChild(div);
+  });
+  document.getElementById('sa').textContent=fmt(ta);
+  document.getElementById('sr').textContent=fmt(Math.max(0,tg-ta));
+  document.getElementById('st').textContent=filled+'/13';
+}
+
+function buildIcoPicker(){
+  var c=document.getElementById('icp');c.innerHTML='';
+  ICONS.forEach(function(ic){
+    var d=document.createElement('div');
+    d.className='ip'+(ic.id===selIcon.id?' sel':'');
+    d.innerHTML=svgWrap(ic);
+    d.title=ic.label;
+    d.onclick=function(){
+      selIcon=ic;
+      document.querySelectorAll('.ip').forEach(function(e){e.classList.remove('sel');});
+      d.classList.add('sel');
+      document.getElementById('m-ico').innerHTML=svgWrap(ic);
+    };
+    c.appendChild(d);
+  });
+}
+
+function openSlot(i){
+  selSlot=i;
+  var s=slots[i];
+  selIcon=s?ICONS.find(function(x){return x.id===s.ico;})||ICONS[i%ICONS.length]:ICONS[i%ICONS.length];
+  buildIcoPicker();
+  document.getElementById('m-ico').innerHTML=svgWrap(selIcon);
+  document.getElementById('m-period').textContent=document.getElementById('dlabel').textContent;
+  document.getElementById('fn').value=s?s.n:'';
+  document.getElementById('fg2').value=s?s.g:'';
+  document.getElementById('fu').value=s?s.u:'';
+  document.getElementById('m-tit').textContent=s?'تعديل الهدف':'هدف جديد';
+  var has=!!s;
+  document.getElementById('m-stats').style.display=has?'grid':'none';
+  document.getElementById('m-pbar').style.display=has?'block':'none';
+  document.getElementById('m-plabel').style.display=has?'flex':'none';
+  document.getElementById('m-del').style.display=has?'block':'none';
+  if(has){
+    var a=getAchieved(i),g=Number(s.g||0),r=Math.max(0,g-a),p=pct(a,g);
+    document.getElementById('ms-a').textContent=fmt(a)+(s.u?' '+s.u:'');
+    document.getElementById('ms-r').textContent=fmt(r)+(s.u?' '+s.u:'');
+    document.getElementById('m-pfill').style.width=Math.min(p,100)+'%';
+    document.getElementById('m-ppct').textContent=p+'%';
+  }
+  renderDLog(i);
+  document.getElementById('sm').classList.add('open');
+}
+
+function renderDLog(i){
+  var logs=getLogs(i),s=slots[i],u=s?s.u:'';
+  var L=document.getElementById('dl-list');
+  if(!logs.length){L.innerHTML='<div class="dlog-empty">لا توجد إدخالات اليوم</div>';return;}
+  L.innerHTML=logs.slice().reverse().map(function(l,ri){
+    var realIdx=logs.length-1-ri;
+    return'<div class="dlog-row"><span class="dlog-date">🕐 '+l.t+'</span><span class="dlog-val">+'+fmt(l.v)+(u?' '+u:'')+'</span><button class="dlog-x" onclick="delLog('+realIdx+')">✕</button></div>';
+  }).join('');
+}
+
+function addLog(){
+  var v=Number(document.getElementById('dl-inp').value);
+  if(!v||v<=0)return;
+  var logs=getLogs(selSlot);
+  var now=new Date(),t=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  logs.push({v:v,t:t});
+  setLogs(selSlot,logs);
+  document.getElementById('dl-inp').value='';
+  var s=slots[selSlot];
+  if(s){
+    var a=getAchieved(selSlot),g=Number(s.g||0),r=Math.max(0,g-a),p=pct(a,g);
+    document.getElementById('ms-a').textContent=fmt(a)+(s.u?' '+s.u:'');
+    document.getElementById('ms-r').textContent=fmt(r)+(s.u?' '+s.u:'');
+    document.getElementById('m-pfill').style.width=Math.min(p,100)+'%';
+    document.getElementById('m-ppct').textContent=p+'%';
+    document.getElementById('m-stats').style.display='grid';
+    document.getElementById('m-pbar').style.display='block';
+    document.getElementById('m-plabel').style.display='flex';
+  }
+  renderDLog(selSlot);renderGrid();
+}
+
+function delLog(idx){
+  var logs=getLogs(selSlot);
+  logs.splice(idx,1);setLogs(selSlot,logs);
+  renderDLog(selSlot);renderGrid();
+}
+
+function saveSlot(){
+  var nm=document.getElementById('fn').value.trim();
+  if(!nm){alert('الرجاء إدخال اسم الهدف');return;}
+  slots[selSlot]={ico:selIcon.id,n:nm,g:Number(document.getElementById('fg2').value)||0,u:document.getElementById('fu').value.trim()};
+  sv();closeM();renderGrid();
+}
+
+function clearSlot(){
+  if(confirm('مسح هذا الهدف؟')){
+    slots[selSlot]=null;
+    localStorage.removeItem('log-'+selSlot+'-'+dateKey());
+    sv();closeM();renderGrid();
+  }
+}
+
+function closeM(){document.getElementById('sm').classList.remove('open');}
+document.getElementById('sm').addEventListener('click',function(e){if(e.target===this)closeM();});
+updDate();
+</script>
+</body>
+</html>
