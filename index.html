@@ -306,7 +306,7 @@ function renderGrid(){
     var a=getAchieved(i),g=Number(s?s.g:0),r=Math.max(0,g-a),p=pct(a,g);
     if(g>0){tg+=g;ta+=a;filled++;}
     div.className='slot '+(g>0?'filled':'empty');
-    div.onclick=function(){openSlot(i);};
+    (function(idx){div.addEventListener('click',function(){openSlot(idx);});})(i);
     div.innerHTML='<div class="slot-ico">'+svgWrap(ico)+'</div>'+
       '<div class="slot-name">'+f.n+'</div>'+
       (g>0?
