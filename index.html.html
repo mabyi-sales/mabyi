@@ -7,8 +7,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="مبيعاتي">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#6a1b9a">
 <title>مبيعاتي</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.img">
+<link rel="icon" href="apple-touch-icon.img">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:Tahoma,sans-serif;background:#f5f5f5;color:#1a1a2e;min-height:100vh;max-width:430px;margin:auto}
@@ -93,6 +95,16 @@ body{font-family:Tahoma,sans-serif;background:#f5f5f5;color:#1a1a2e;min-height:1
 .dlog-val{font-size:12px;font-weight:800;color:#5e35b1}
 .dlog-x{background:none;border:none;color:#e53935;font-size:13px;cursor:pointer}
 .dlog-empty{font-size:11px;color:#b39ddb;text-align:center;padding:8px 0}
+/* CHART */
+.chart-row{margin-bottom:10px}
+.chart-label{display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:#4527a0;margin-bottom:4px}
+.chart-label span{color:#9e9e9e;font-weight:400}
+.chart-track{height:22px;background:#f5f0ff;border-radius:999px;overflow:hidden;position:relative}
+.chart-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7b1fa2,#ce93d8);display:flex;align-items:center;justify-content:flex-end;padding-left:6px;transition:width .5s}
+.chart-fill span{font-size:9px;font-weight:800;color:#fff;white-space:nowrap;padding:0 6px}
+.chart-empty{height:100%;border-radius:999px;background:#ede7f6;display:flex;align-items:center;justify-content:center}
+.chart-empty span{font-size:9px;color:#b39ddb}
+.chart-divider{height:1px;background:#f5f0ff;margin:12px 0}
 </style>
 </head>
 <body>
@@ -101,7 +113,7 @@ body{font-family:Tahoma,sans-serif;background:#f5f5f5;color:#1a1a2e;min-height:1
   <div class="hdr-top">
     <div class="logo">🔷 <span>مبيعاتي</span></div>
     <div style="text-align:left">
-      <div style="font-size:10px;font-weight:800;color:#7b1fa2">تنفيذ أبو سطام</div>
+      <div style="font-size:10px;font-weight:800;color:#7b1fa2">تنفيذ محمد الخالد</div>
       <div class="credit">يعمل بدون إنترنت</div>
     </div>
   </div>
@@ -128,12 +140,10 @@ body{font-family:Tahoma,sans-serif;background:#f5f5f5;color:#1a1a2e;min-height:1
     <div class="mtit" id="m-tit">هدف جديد</div>
     <div class="msub">📅 <span id="m-period"></span></div>
 
-    <span class="ico-pick-label">اختر الأيقونة</span>
-    <div class="ico-grid" id="icp"></div>
+    <span class="ico-pick-label" style="display:none"></span>
+    <div class="ico-grid" id="icp" style="display:none"></div>
 
-    <div class="fg"><label>اسم الهدف</label><input class="fi" id="fn" placeholder="مثال: مبيعات آيفون"></div>
     <div class="fg"><label>الهدف المستهدف</label><input class="fi" id="fg2" type="number" inputmode="numeric" placeholder="0" min="0"></div>
-    <div class="fg"><label>الوحدة <small style="color:#b39ddb">(ريال / جهاز / شريحة)</small></label><input class="fi" id="fu" placeholder="اختياري"></div>
 
     <div class="stats-row" id="m-stats" style="display:none">
       <div class="stat-box"><small>✅ المحقق</small><b id="ms-a">0</b></div>
@@ -156,6 +166,19 @@ body{font-family:Tahoma,sans-serif;background:#f5f5f5;color:#1a1a2e;min-height:1
       <button class="msav" onclick="saveSlot()">💾 حفظ</button>
     </div>
     <button class="mdel" id="m-del" onclick="clearSlot()" style="display:none">🗑️ مسح الهدف</button>
+  </div>
+</div>
+
+<!-- CHART MODAL -->
+<div class="ov" id="cm">
+  <div class="modal" style="padding-bottom:50px">
+    <div class="mhdl"></div>
+    <div class="mtit" style="color:#b8860b">📊 تقرير الأهداف</div>
+    <div class="msub" id="cm-date"></div>
+    <div id="chart-wrap" style="padding:4px 0"></div>
+    <div class="mact" style="margin-top:14px">
+      <button class="mcan" onclick="closeChart()">إغلاق</button>
+    </div>
   </div>
 </div>
 
@@ -222,13 +245,43 @@ var ICONS = [
   {id:'lock',label:'أمان',svg:'<rect x="7" y="14" width="18" height="14" rx="3" fill="#fff" opacity=".9"/><path d="M10 14 L10 10 Q10 4 16 4 Q22 4 22 10 L22 14" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="20" r="2.5" fill="#9c27b0" opacity=".5"/><line x1="16" y1="22" x2="16" y2="25" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/>'},
   // 30 إعدادات
   {id:'settings',label:'إعدادات',svg:'<circle cx="16" cy="16" r="4" fill="#fff" opacity=".9"/><path d="M16 4 L17.5 8 L21.5 6.5 L21.5 10.5 L25.5 11 L23 14.5 L26 17.5 L22.5 19 L23 23 L19 22 L17.5 26 L15 23.5 L12.5 26 L11 22 L7 23 L7.5 19 L4 17.5 L7 14.5 L4.5 11 L8.5 10.5 L8.5 6.5 L12.5 8 Z" fill="#fff" opacity=".75"/>'},
+  // 31 كابل فايبر FTTH
+  {id:'ftth',label:'FTTH',svg:'<circle cx="16" cy="16" r="11" stroke="#fff" stroke-width="2" fill="none"/><line x1="16" y1="5" x2="16" y2="27" stroke="#fff" stroke-width="1.5"/><line x1="5" y1="16" x2="27" y2="16" stroke="#fff" stroke-width="1.5"/><path d="M8 9 Q16 14 24 9" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M8 23 Q16 18 24 23" stroke="#fff" stroke-width="1.2" fill="none"/><circle cx="16" cy="16" r="2.5" fill="#fff" opacity=".8"/>'},
+  // 32 تبادل trade in
+  {id:'tradein',label:'Trade In',svg:'<rect x="5" y="4" width="10" height="17" rx="2" fill="#fff" opacity=".85"/><rect x="17" y="11" width="10" height="17" rx="2" fill="#fff" opacity=".6"/><path d="M19 8 L23 4 L27 8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="23" y1="4" x2="23" y2="11" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M13 24 L9 28 L5 24" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="9" y1="28" x2="9" y2="21" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'},
+  // 33 حماية الجهاز
+  {id:'shield',label:'Device Protection',svg:'<path d="M16 3 L26 7 L26 16 Q26 23 16 29 Q6 23 6 16 L6 7 Z" fill="#fff" opacity=".85"/><path d="M11 16 L14 19 L21 12" stroke="#9c27b0" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'},
+  // 34 Jawwy
+  {id:'jawwy',label:'Jawwy',svg:'<rect x="7" y="4" width="18" height="24" rx="3" fill="#fff" opacity=".9"/><rect x="10" y="8" width="12" height="8" rx="1.5" fill="#9c27b0" opacity=".3"/><circle cx="13" cy="12" r="1.5" fill="#9c27b0" opacity=".7"/><circle cx="16" cy="12" r="1.5" fill="#9c27b0" opacity=".7"/><circle cx="19" cy="12" r="1.5" fill="#9c27b0" opacity=".7"/><rect x="10" y="19" width="12" height="2" rx="1" fill="#9c27b0" opacity=".4"/><rect x="10" y="23" width="7" height="2" rx="1" fill="#9c27b0" opacity=".4"/>'},
+  // 35 FWA
+  {id:'fwa',label:'FWA',svg:'<rect x="9" y="14" width="14" height="12" rx="2" fill="#fff" opacity=".9"/><line x1="16" y1="3" x2="16" y2="14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M6 9 Q16 2 26 9" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M9 12 Q16 7 23 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="13" cy="19" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="16" cy="19" r="1.5" fill="#9c27b0" opacity=".6"/><circle cx="19" cy="19" r="1.5" fill="#9c27b0" opacity=".6"/>'},
+  // 36 EBU
+  {id:'ebu',label:'EBU',svg:'<rect x="4" y="10" width="24" height="18" rx="2" fill="#fff" opacity=".85"/><rect x="8" y="6" width="16" height="6" rx="1" fill="#fff" opacity=".65"/><rect x="7" y="14" width="4" height="5" rx=".5" fill="#9c27b0" opacity=".5"/><rect x="14" y="14" width="4" height="5" rx=".5" fill="#9c27b0" opacity=".5"/><rect x="21" y="14" width="4" height="5" rx=".5" fill="#9c27b0" opacity=".5"/><rect x="12" y="22" width="8" height="6" rx=".5" fill="#9c27b0" opacity=".4"/>'},
 ];
 
 var MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 var DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 var today=new Date(),curD=new Date(today);
 var selSlot=null,selIcon=ICONS[0];
-var slots=JSON.parse(localStorage.getItem('sl13b')||'[]');
+
+// الأهداف الثابتة - الاسم والوحدة محددة مسبقاً
+var FIXED=[
+  {n:'iPhone',        u:'SAR', ico:'iphone'},
+  {n:'Non iPhone',    u:'SAR', ico:'android'},
+  {n:'Non Core',      u:'SAR', ico:'laptop'},
+  {n:'EBU MRC',       u:'SAR', ico:'ebu'},
+  {n:'PS Voice',      u:'QTY', ico:'phone'},
+  {n:'PS Data',       u:'QTY', ico:'internet'},
+  {n:'PP Voice',      u:'QTY', ico:'headphones'},
+  {n:'PP Data',       u:'QTY', ico:'wifi'},
+  {n:'Jawwy',         u:'QTY', ico:'jawwy'},
+  {n:'FWA',           u:'QTY', ico:'fwa'},
+  {n:'FTTH',          u:'QTY', ico:'ftth'},
+  {n:'Trade In',      u:'QTY', ico:'tradein'},
+  {n:'Device Prot.',  u:'QTY', ico:'shield'},
+];
+
+var slots=JSON.parse(localStorage.getItem('sl13c')||'[]');
 if(slots.length!==13){slots=Array(13).fill(null).map(function(_,i){return slots[i]||null;});}
 
 function dateKey(){return curD.getFullYear()+'-'+(curD.getMonth()+1)+'-'+curD.getDate();}
@@ -241,31 +294,45 @@ function svgWrap(ico){return'<svg viewBox="0 0 32 32" fill="none" xmlns="http://
 function getLogs(idx){return JSON.parse(localStorage.getItem('log-'+idx+'-'+dateKey())||'[]');}
 function setLogs(idx,logs){localStorage.setItem('log-'+idx+'-'+dateKey(),JSON.stringify(logs));}
 function getAchieved(idx){return getLogs(idx).reduce(function(s,l){return s+l.v;},0);}
-function sv(){localStorage.setItem('sl13b',JSON.stringify(slots));}
+function sv(){localStorage.setItem('sl13c',JSON.stringify(slots));}
 
 function renderGrid(){
   var tg=0,ta=0,filled=0;
   var G=document.getElementById('grid');G.innerHTML='';
-  slots.forEach(function(s,i){
+  FIXED.forEach(function(f,i){
+    var s=slots[i];
+    var ico=ICONS.find(function(x){return x.id===f.ico;})||ICONS[i%ICONS.length];
     var div=document.createElement('div');
-    if(!s){
-      div.className='slot empty';
-      div.onclick=function(){openSlot(i);};
-      div.innerHTML='<div class="slot-ico">'+svgWrap(ICONS[i%ICONS.length])+'</div><div class="slot-name">فارغ — اضغط</div><div class="slot-pct">—</div>';
-    } else {
-      var ico=ICONS.find(function(x){return x.id===s.ico;})||ICONS[0];
-      var a=getAchieved(i),g=Number(s.g||0),r=Math.max(0,g-a),p=pct(a,g);
-      tg+=g;ta+=a;filled++;
-      div.className='slot filled';
-      div.onclick=function(){openSlot(i);};
-      div.innerHTML='<div class="slot-ico">'+svgWrap(ico)+'</div>'+
-        '<div class="slot-name">'+s.n+'</div>'+
+    var a=getAchieved(i),g=Number(s?s.g:0),r=Math.max(0,g-a),p=pct(a,g);
+    if(g>0){tg+=g;ta+=a;filled++;}
+    div.className='slot '+(g>0?'filled':'empty');
+    div.onclick=function(){openSlot(i);};
+    div.innerHTML='<div class="slot-ico">'+svgWrap(ico)+'</div>'+
+      '<div class="slot-name">'+f.n+'</div>'+
+      (g>0?
         '<div class="slot-pct">'+p+'%</div>'+
         '<div class="mini-bar"><div class="mini-fill" style="width:'+Math.min(p,100)+'%"></div></div>'+
-        '<div class="slot-num">'+fmt(a)+' / '+fmt(g)+'</div>';
-    }
+        '<div class="slot-num">'+fmt(a)+' / '+fmt(g)+'</div>'
+      :'<div class="slot-pct" style="font-size:9px;color:#ce93d8">اضغط للإدخال</div>');
     G.appendChild(div);
   });
+
+  // أيقونة الرسم البياني
+  var chartDiv=document.createElement('div');
+  chartDiv.className='slot filled';
+  chartDiv.style.cssText='border-color:#d29922;background:linear-gradient(135deg,#fff9e6,#fff3cc);grid-column:span 2';
+  chartDiv.onclick=openChart;
+  chartDiv.innerHTML=
+    '<div style="display:flex;align-items:center;gap:12px;justify-content:center">'+
+    '<div class="slot-ico" style="background:linear-gradient(135deg,#f57f17,#d29922);width:52px;height:52px;flex-shrink:0">'+
+    '<svg viewBox="0 0 32 32" fill="none"><rect x="3" y="20" width="5" height="9" rx="1.5" fill="#fff" opacity=".9"/><rect x="10" y="14" width="5" height="15" rx="1.5" fill="#fff" opacity=".9"/><rect x="17" y="8" width="5" height="21" rx="1.5" fill="#fff" opacity=".9"/><rect x="24" y="3" width="5" height="26" rx="1.5" fill="#fff" opacity=".9"/><polyline points="5,19 12,13 19,7 26,2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+    '</div>'+
+    '<div style="text-align:right">'+
+    '<div style="font-size:15px;font-weight:900;color:#b8860b">📊 التقرير الكامل</div>'+
+    '<div style="font-size:11px;color:#d29922;margin-top:3px">اضغط لعرض جميع الأهداف</div>'+
+    '</div>'+
+    '</div>';
+  G.appendChild(chartDiv);
   document.getElementById('sa').textContent=fmt(ta);
   document.getElementById('sr').textContent=fmt(Math.max(0,tg-ta));
   document.getElementById('st').textContent=filled+'/13';
@@ -273,41 +340,32 @@ function renderGrid(){
 
 function buildIcoPicker(){
   var c=document.getElementById('icp');c.innerHTML='';
-  ICONS.forEach(function(ic){
-    var d=document.createElement('div');
-    d.className='ip'+(ic.id===selIcon.id?' sel':'');
-    d.innerHTML=svgWrap(ic);
-    d.title=ic.label;
-    d.onclick=function(){
-      selIcon=ic;
-      document.querySelectorAll('.ip').forEach(function(e){e.classList.remove('sel');});
-      d.classList.add('sel');
-      document.getElementById('m-ico').innerHTML=svgWrap(ic);
-    };
-    c.appendChild(d);
-  });
+  var f=FIXED[selSlot];
+  var ico=ICONS.find(function(x){return x.id===f.ico;})||ICONS[0];
+  selIcon=ico;
+  document.getElementById('m-ico').innerHTML=svgWrap(ico);
 }
 
 function openSlot(i){
   selSlot=i;
   var s=slots[i];
-  selIcon=s?ICONS.find(function(x){return x.id===s.ico;})||ICONS[i%ICONS.length]:ICONS[i%ICONS.length];
+  var f=FIXED[i];
   buildIcoPicker();
-  document.getElementById('m-ico').innerHTML=svgWrap(selIcon);
   document.getElementById('m-period').textContent=document.getElementById('dlabel').textContent;
-  document.getElementById('fn').value=s?s.n:'';
+  document.getElementById('fn').value=f.n;
   document.getElementById('fg2').value=s?s.g:'';
-  document.getElementById('fu').value=s?s.u:'';
-  document.getElementById('m-tit').textContent=s?'تعديل الهدف':'هدف جديد';
-  var has=!!s;
+  document.getElementById('fu').value=f.u;
+  document.getElementById('m-tit').textContent=f.n;
+  document.getElementById('m-sub').innerHTML='📅 <span id="m-period2">'+document.getElementById('dlabel').textContent+'</span> &nbsp;|&nbsp; الوحدة: <b>'+f.u+'</b>';
+  var has=!!(s&&s.g);
   document.getElementById('m-stats').style.display=has?'grid':'none';
   document.getElementById('m-pbar').style.display=has?'block':'none';
   document.getElementById('m-plabel').style.display=has?'flex':'none';
   document.getElementById('m-del').style.display=has?'block':'none';
   if(has){
     var a=getAchieved(i),g=Number(s.g||0),r=Math.max(0,g-a),p=pct(a,g);
-    document.getElementById('ms-a').textContent=fmt(a)+(s.u?' '+s.u:'');
-    document.getElementById('ms-r').textContent=fmt(r)+(s.u?' '+s.u:'');
+    document.getElementById('ms-a').textContent=fmt(a)+' '+f.u;
+    document.getElementById('ms-r').textContent=fmt(r)+' '+f.u;
     document.getElementById('m-pfill').style.width=Math.min(p,100)+'%';
     document.getElementById('m-ppct').textContent=p+'%';
   }
@@ -354,9 +412,10 @@ function delLog(idx){
 }
 
 function saveSlot(){
-  var nm=document.getElementById('fn').value.trim();
-  if(!nm){alert('الرجاء إدخال اسم الهدف');return;}
-  slots[selSlot]={ico:selIcon.id,n:nm,g:Number(document.getElementById('fg2').value)||0,u:document.getElementById('fu').value.trim()};
+  var g=Number(document.getElementById('fg2').value)||0;
+  if(!g){alert('الرجاء إدخال الهدف');return;}
+  var f=FIXED[selSlot];
+  slots[selSlot]={ico:f.ico,n:f.n,g:g,u:f.u};
   sv();closeM();renderGrid();
 }
 
@@ -370,6 +429,36 @@ function clearSlot(){
 
 function closeM(){document.getElementById('sm').classList.remove('open');}
 document.getElementById('sm').addEventListener('click',function(e){if(e.target===this)closeM();});
+document.getElementById('cm').addEventListener('click',function(e){if(e.target===this)closeChart();});
+
+function openChart(){
+  document.getElementById('cm-date').textContent='📅 '+document.getElementById('dlabel').textContent;
+  var wrap=document.getElementById('chart-wrap');
+  wrap.innerHTML='';
+  FIXED.forEach(function(f,i){
+    var s=slots[i];
+    var g=Number(s?s.g:0),a=getAchieved(i),p=pct(a,g);
+    var row=document.createElement('div');
+    row.className='chart-row';
+    var fillColor=p>=100?'linear-gradient(90deg,#d29922,#f9a825)':p>=80?'linear-gradient(90deg,#2e7d32,#43a047)':p>=50?'linear-gradient(90deg,#7b1fa2,#ce93d8)':'linear-gradient(90deg,#c62828,#ef5350)';
+    row.innerHTML=
+      '<div class="chart-label"><b>'+f.n+'</b><span>'+fmt(a)+' / '+fmt(g)+' '+f.u+'</span></div>'+
+      '<div class="chart-track">'+
+        (g>0?
+          '<div class="chart-fill" style="width:'+Math.min(p,100)+'%;background:'+fillColor+'"><span>'+p+'%</span></div>'
+        :'<div class="chart-empty"><span>لم يُدخل هدف</span></div>')+
+      '</div>';
+    wrap.appendChild(row);
+    if(i<FIXED.length-1){
+      var div=document.createElement('div');
+      div.className='chart-divider';
+      wrap.appendChild(div);
+    }
+  });
+  document.getElementById('cm').classList.add('open');
+}
+
+function closeChart(){document.getElementById('cm').classList.remove('open');}
 updDate();
 </script>
 </body>
