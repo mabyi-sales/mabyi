@@ -859,4 +859,93 @@ function getPeriodAchieved(i, type) {
       var dd = new Date(now);
       dd.setDate(now.getDate()-w);
       var wk = dd.getFullYear()+'-'+(dd.getMonth()+1)+'-'+dd.getDate();
-      var 
+      var arr = d.logs[wk] || [];
+      total += arr.reduce(function(s,l){return s+l.v;},0);
+    }
+    return total;
+  }
+
+  if(type === 'month') {
+    var yr = now.getFullYear(), mo = now.getMonth()+1;
+    Object.keys(d.logs).forEach(function(k){
+      var parts = k.split('-');
+      if(Number(parts[0])===yr && Number(parts[1])===mo) {
+        total += (d.logs[k]||[]).reduce(function(s,l){return s+l.v;},0);
+      }
+    });
+    return total;
+  }
+  return 0;
+}
+
+function getPeriodLabel(type) {
+  var now = new Date(curD);
+  if(type === 'day') return '📊 تقرير اليوم — ' + DAYS[now.getDay()] + ' ' + now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+  if(type === 'week') {
+    var end = new Date(now);
+    var start = new Date(now); start.setDate(now.getDate()-6);
+    return '📅 تقرير أسبوعي — ' + start.getDate()+' '+MONTHS[start.getMonth()] + ' إلى ' + end.getDate()+' '+MONTHS[end.getMonth()]+' '+end.getFullYear();
+  }
+  if(type === 'month') return '📆 تقرير شهري — ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+  return '';
+}
+
+function openChart(type) {
+  type = type || 'day';
+  var label = getPeriodLabel(type);
+  document.getElementById('chart-date').textContent = label;
+
+  // Update export buttons
+  var exportBtn = document.getElementById('chart-export-btn');
+  var pdfBtn = document.getElementById('chart-export-pdf');
+  exportBtn.dataset.period = type;
+  pdfBtn.dataset.period = type;
+
+  var body = document.getElementById('chart-body');
+  body.innerHTML = '';
+  for(var i=0; i<FIXED.length; i++) {
+    var f = FIXED[i];
+    var g = getGoal(i);
+    var a = getPeriodAchieved(i, type);
+    var p = pct(a,g);
+    var color = p>=100 ? 'linear-gradient(90deg,#f57f17,#fbc02d)' :
+                p>=80  ? 'linear-gradient(90deg,#2e7d32,#43a047)' :
+                p>=50  ? 'linear-gradient(90deg,#7b1fa2,#ce93d8)' :
+                         'linear-gradient(90deg,#c62828,#ef5350)';
+    var row = document.createElement('div');
+    row.className = 'chart-row';
+    row.innerHTML =
+      '<div class="chart-lbl"><b>' + f.n + '</b><span>' + fmt(a) + ' / ' + fmt(g) + ' ' + f.u + '</span></div>' +
+      '<div class="chart-track">' +
+        (g>0 ?
+          '<div class="chart-fill" style="width:'+Math.min(p,100)+'%;background:'+color+'"><em>'+p+'%</em></div>' :
+          '<div class="chart-none"><em>لم يُدخل هدف</em></div>'
+        ) +
+      '</div>';
+    body.appendChild(row);
+    if(i < FIXED.length-1) {
+      var divEl = document.createElement('div');
+      divEl.className = 'chart-div';
+      body.appendChild(divEl);
+    }
+  }
+  document.getElementById('chart-ov').classList.add('open');
+}
+
+document.getElementById('chart-close').addEventListener('click', function() {
+  document.getElementById('chart-ov').classList.remove('open');
+  document.getElementById('chart-export-btn').textContent = '📤 تصدير للواتساب';
+  document.getElementById('export-txt').style.display = 'none';
+});
+document.getElementById('chart-ov').addEventListener('click', function(e) {
+  if(e.target === this) this.classList.remove('open');
+});
+
+updateEmpDisplay();
+updateBranchDisplay();
+
+// ===== INIT =====
+updateDate();
+</script>
+</body>
+</html>
